@@ -1,5 +1,5 @@
 const router = require("express").Router();
-const posts = require("../data/db");
+const db = require("../data/db");
 
 // POST "/"
 router.post("/", (req, res) => {
@@ -7,7 +7,7 @@ router.post("/", (req, res) => {
     if (!(body.title && body.contents)) {
         res.status(400).json({ errorMessage: "Please include a title and contents for the post." })
     } else {
-        posts
+        db
             .insert(body)
             .then(id => {
                 res.status(201).json(id);
@@ -20,32 +20,41 @@ router.post("/", (req, res) => {
 
 // POST "/:id/comments"
 router.post("/:id/comments", (req, res) => {
+    const body = req.body;
 
 });
 
 // GET "/"
 router.get("/", (req, res) => {
-
+    db
+        .find()
+        .then(posts => {
+            res.status(200).json(posts);
+        })
+        .catch(err => {
+            res.status(500).json({ errorMessage: "Internal server error.", error: err });
+        });
 });
 
 // GET "/:id"
 router.get("/:id", (req, res) => {
-
+    const id = req.params.id;
 });
 
 // GET "/:id/comments"
 router.get("/:id/comments", (req, res) => {
-
+    const id = req.params.id;
 });
 
 // DELETE "/:id"
 router.delete("/:id", (req, res) => {
-
+    const id = req.params.id;
 });
 
 // PUT "/:id"
 router.put("/:id", (req, res) => {
-
+    const id = req.params.id;
+    const body = req.body;
 });
 
 module.exports = router;
