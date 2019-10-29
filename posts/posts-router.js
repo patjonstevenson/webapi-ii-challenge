@@ -27,12 +27,21 @@ router.post("/:id/comments", (req, res) => {
     } else {
 
         db
-            .insertComment(body)
-            .then(commentId => {
-                res.status(201).json(commentId);
-            })
-            .catch(err => {
-                res.status(404).json({ message: "The post with the specified ID does not exist." });
+            .findById(body.id)
+            .then(found => {
+                db
+                    .insertComment(body)
+                    .then(commentId => {
+                        res.status(201).json(commentId);
+                    })
+                    // .catch(err => {
+                    //     res.status(500).json({ error: "There was an error while saving the comment to the database" });
+                    // });
+                    //})
+                    .catch(err => {
+                        res.status(404).json({ message: "The post with the specified ID does not exist." });
+                    });
+                //}
             });
     }
 });
@@ -68,9 +77,15 @@ router.get("/:id/comments", (req, res) => {
     db
         .findPostComments(id)
         .then(comments => {
-
+            if (!comments) {
+                res.status(404).json({ message: "The post with the specified ID does not exist." });
+            } else {
+                res.status(200).json(comments);
+            }
         })
-        .catch();
+        .catch(err => {
+            res.status(500).json({ error: "The comments information could not be retrieved." });
+        });
 });
 
 // DELETE "/:id"
