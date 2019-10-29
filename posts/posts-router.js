@@ -21,7 +21,20 @@ router.post("/", (req, res) => {
 // POST "/:id/comments"
 router.post("/:id/comments", (req, res) => {
     const body = req.body;
+    console.log("Running post to /:id/comments");
+    if (!body.text) {
+        res.status(400).json({ errorMessage: "Please provide text for the comment." });
+    } else {
 
+        db
+            .insertComment(body)
+            .then(commentId => {
+                res.status(201).json(commentId);
+            })
+            .catch(err => {
+                res.status(404).json({ message: "The post with the specified ID does not exist." });
+            });
+    }
 });
 
 // GET "/"
@@ -52,6 +65,12 @@ router.get("/:id", (req, res) => {
 // GET "/:id/comments"
 router.get("/:id/comments", (req, res) => {
     const id = req.params.id;
+    db
+        .findPostComments(id)
+        .then(comments => {
+
+        })
+        .catch();
 });
 
 // DELETE "/:id"
