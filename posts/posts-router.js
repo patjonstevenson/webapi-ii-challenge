@@ -120,6 +120,40 @@ router.delete("/:id", (req, res) => {
 router.put("/:id", (req, res) => {
     const id = req.params.id;
     const body = req.body;
+
+    if (!(body.title && body.contents)) {
+        res.status(400).json({ errorMessage: "Please provide title and contents for the post." });
+    } else {
+        db
+            .findById(id)
+            .then(post => {
+                if (!post) {
+                    res.status(404).json({ message: "The post with the specified ID does not exist." });
+                } else {
+                    db
+                        .update(id, body)
+                        .then(num => {
+                            if (num === 0) {
+                                res.status(404).json({ message: "The post with the specified ID does not exist." });
+                            } else {
+                                db
+                                    .findById(id)
+                                    .then(newPost => {
+                                        res.status(200).json(newPost);
+                                    })
+                                    .catch(err => {
+                                        res.status(500).json({ error: "The post information could not be modified." });
+                                    })
+
+                            }
+                        })
+                        .catch(err => {
+                            res.status(500).json({ error: "The post information could not be modified." });
+                        });
+                }
+            })
+            .catch();
+    }
 });
 
 module.exports = router;
