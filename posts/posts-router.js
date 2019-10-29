@@ -39,6 +39,14 @@ router.get("/", (req, res) => {
 // GET "/:id"
 router.get("/:id", (req, res) => {
     const id = req.params.id;
+    db
+        .findById(id)
+        .then(post => {
+            res.status(200).json(...post);
+        })
+        .catch(err => {
+            res.status(500).json({ errorMessage: "Internal server error" });
+        });
 });
 
 // GET "/:id/comments"
